@@ -110,7 +110,7 @@ func CheckFolders() {
 		if !Exists(d) {
 			log.Printf("Creating folder: %s ", d)
 
-			err := os.Mkdir(d, os.ModePerm)
+			err := os.MkdirAll(d, os.ModePerm)
 			if err != nil {
 				panic(err)
 			}
