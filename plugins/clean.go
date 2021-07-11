@@ -41,7 +41,23 @@ func Clean() {
 		}
 	}
 
-	s, err := ioutil.ReadDir(structure.Dir.PStart)
+	for _, v := range d {
+		err := os.Remove(filepath.Join(structure.Dir.PluginCfg, v))
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Removed '%s'\n", v)
+	}
+
+	removePluginRepos(structure.Dir.PStart, p)
+	removePluginRepos(structure.Dir.POpt, p)
+
+	updateCfgInit()
+}
+
+func removePluginRepos(dir string, p []plugin) {
+	s, err := ioutil.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}
@@ -64,23 +80,12 @@ func Clean() {
 		}
 	}
 
-	for _, v := range d {
-		err := os.Remove(filepath.Join(structure.Dir.PluginCfg, v))
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Removed '%s'\n", v)
-	}
-
 	for _, v := range pf {
-		err := os.RemoveAll(filepath.Join(structure.Dir.PStart, v))
+		err := os.RemoveAll(filepath.Join(dir, v))
 		if err != nil {
 			panic(err)
 		}
 
 		fmt.Printf("Removed '%s'\n", v)
 	}
-
-	updateCfgInit()
 }

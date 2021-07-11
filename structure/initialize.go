@@ -17,7 +17,7 @@ type folders struct {
 	plugins   string
 	PluginCfg string
 	PStart    string
-	pOpt      string
+	POpt      string
 }
 
 var Dir = folders{}
@@ -95,7 +95,7 @@ func SetFolders(n, p string) {
 	}
 
 	Dir.PStart = filepath.Join(Dir.plugins, "start")
-	Dir.pOpt = filepath.Join(Dir.plugins, "opt")
+	Dir.POpt = filepath.Join(Dir.plugins, "opt")
 	Dir.lua = filepath.Join(Dir.nvim, "lua")
 	Dir.custom = filepath.Join(Dir.lua, "custom")
 	Dir.PluginCfg = filepath.Join(Dir.lua, "plugins")

@@ -45,8 +45,14 @@ func Exists(d string) bool {
 	return true
 }
 
-func GetPluginDir(d string) string {
-	return filepath.Join(Dir.PStart, d)
+func GetPluginDir(d string, opt bool) string {
+	base := Dir.PStart
+
+	if opt {
+		base = Dir.POpt
+	}
+
+	return filepath.Join(base, d)
 }
 
 func GetPluginConf(cfg string) string {

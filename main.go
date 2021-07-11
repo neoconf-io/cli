@@ -17,11 +17,11 @@ var f embed.FS
 const minLength = 2
 
 type cmd struct {
+	do          func()
 	long        string
 	short       string
 	example     string
 	description string
-	do          func()
 }
 
 func (c cmd) check(arg string) bool {
@@ -50,8 +50,8 @@ func getCmds() []cmd {
 	install := cmd{
 		long:        "install",
 		short:       "i",
-		example:     "neoconf install neovim/nvim-lspconfig nvim-telescope/telescope.nvim",
-		description: "Installs all plugins provided.",
+		example:     "neoconf install neovim/nvim-lspconfig nvim-telescope/telescope.nvim:opt",
+		description: "Installs all plugins provided. Branch can be specified by appending '@<branch>'. Installing the plugin as an optional by appending ':opt'. MUST BE APPENDED AFTER THE BRANCH.",
 		do: func() {
 			plugins.Install(os.Args[2:])
 		},

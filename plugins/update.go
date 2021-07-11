@@ -12,14 +12,14 @@ import (
 
 type updated struct {
 	sync.RWMutex
-	list []dir
+	list []plugin
 }
 
-func (u *updated) append(d dir) {
+func (u *updated) append(p plugin) {
 	u.Lock()
 	defer u.Unlock()
 
-	u.list = append(u.list, d)
+	u.list = append(u.list, p)
 }
 
 func Update() {
@@ -35,7 +35,7 @@ func Update() {
 		wg.Add(l)
 
 		for _, v := range p {
-			if !structure.Exists(structure.GetPluginDir(string(v.dir))) {
+			if !structure.Exists(structure.GetPluginDir(string(v.dir), v.opt)) {
 				wg.Done()
 
 				continue
@@ -49,15 +49,15 @@ func Update() {
 
 	n := len(items.list)
 	if n > 0 && confirmation(fmt.Sprintf("%d packages have been updated. Show info?", n)) {
-		for _, dir := range items.list {
-			showUpdateInfo(dir)
+		for _, plugin := range items.list {
+			showUpdateInfo(plugin)
 		}
 	}
 }
 
-func showUpdateInfo(d dir) {
+func showUpdateInfo(p plugin) {
 	cmd := exec.Command("git", "log", "--pretty=format:- %s", "@{1}..")
-	cmd.Dir = structure.GetPluginDir(string(d))
+	cmd.Dir = structure.GetPluginDir(string(p.dir), p.opt)
 
 	o, err := cmd.Output()
 	if err == nil {
@@ -71,7 +71,7 @@ func update(p plugin, items *updated, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	cmd := exec.Command("git", "pull")
-	cmd.Dir = structure.GetPluginDir(string(p.dir))
+	cmd.Dir = structure.GetPluginDir(string(p.dir), p.opt)
 
 	b := filepath.Base(cmd.Dir)
 
@@ -90,5 +90,5 @@ func update(p plugin, items *updated, wg *sync.WaitGroup) {
 
 	processInstallCmds(p)
 
-	items.append(p.dir)
+	items.append(p)
 }

@@ -14,6 +14,7 @@ type plugin struct {
 	dir    dir
 	cfg    cfg
 	branch string
+	opt    bool
 }
 
 type (
@@ -50,45 +51,36 @@ func getJSON() []string {
 	return p
 }
 
-func (i cfg) dir() dir { //nolint
-	return dir(strings.ReplaceAll(string(i), "+", "."))
-}
-
-func (i cfg) repo() repo { //nolint
-	return i.dir().repo()
-}
-
 func (i dir) cfg() cfg {
-	return cfg(strings.ReplaceAll(string(i), ".", "+"))
-}
-
-func (i dir) repo() repo { //nolint
-	return repo(strings.Replace(string(i), "_", "/", 1))
-}
-
-func (i repo) cfg() cfg { //nolint
-	return i.dir().cfg()
+	return cfg(strings.ReplaceAll(string(i), ".", "-"))
 }
 
 func (i repo) dir() dir {
-	return dir(strings.Replace(string(i), "/", "_", 1))
+	return dir(strings.Split(string(i), "/")[1])
 }
 
 func parseRepo(i string) plugin {
-	r, b := parsePluginString(i)
+	r, b, o := parsePluginString(i)
 	p := plugin{}
 	p.repo = r
 	p.dir = p.repo.dir()
 	p.cfg = p.dir.cfg()
 	p.branch = b
+	p.opt = o
 
 	return p
 }
 
 const minSplit = 1
 
-func parsePluginString(i string) (r repo, b string) {
-	s := strings.Split(i, "@")
+func parsePluginString(i string) (r repo, b string, o bool) {
+	withopt := strings.Split(i, ":")
+
+	if len(withopt) > minSplit {
+		o = true
+	}
+
+	s := strings.Split(withopt[0], "@")
 
 	if len(s) > minSplit {
 		b = s[1]
@@ -96,5 +88,5 @@ func parsePluginString(i string) (r repo, b string) {
 
 	r = repo(s[0])
 
-	return r, b
+	return r, b, o
 }

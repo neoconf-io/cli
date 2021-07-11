@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/abenz1267/neoconf/structure"
 )
@@ -52,7 +53,7 @@ func getMissing() []plugin {
 	m := []plugin{}
 
 	for _, v := range p {
-		if !structure.Exists(structure.GetPluginDir(string(v.dir))) {
+		if !structure.Exists(structure.GetPluginDir(string(v.dir), v.opt)) {
 			m = append(m, v)
 		}
 	}
@@ -68,10 +69,11 @@ func createCfg(p plugin, wg *sync.WaitGroup) {
 
 	if structure.Exists(d) {
 		fmt.Printf("Installing '%s': config exists.\n", p.repo)
+
 		return
 	}
 
-	err := os.WriteFile(d, nil, os.ModePerm)
+	err := os.WriteFile(d, []byte("-- vim.cmd [[autocmd BufReadPre,FileReadPre * :packadd "+p.repo.dir()+"]]"), os.ModePerm)
 	if err != nil {
 		panic(err)
 	}
@@ -125,7 +127,7 @@ func download(p plugin, wg *sync.WaitGroup) {
 		p.branch = "master"
 	}
 
-	dir := structure.GetPluginDir(string(p.repo.dir()))
+	dir := structure.GetPluginDir(string(p.repo.dir()), p.opt)
 	if structure.Exists(dir) {
 		err := os.RemoveAll(dir)
 		if err != nil {
@@ -133,8 +135,13 @@ func download(p plugin, wg *sync.WaitGroup) {
 		}
 	}
 
-	cmd := exec.Command("git", "clone", "-b", p.branch, "https://github.com/"+string(p.repo), dir) //nolint:gosec
+	cmd := exec.Command("git", "clone", "-b", p.branch, "https://github.com/"+string(p.repo)) //nolint:gosec
 	cmd.Dir = structure.Dir.PStart
+
+	if p.opt {
+		cmd.Dir = structure.Dir.POpt
+	}
+
 	showProgress(cmd, p.repo)
 	processInstallCmds(p)
 }
@@ -153,30 +160,34 @@ func showProgress(cmd *exec.Cmd, r repo) {
 
 	for scanner.Scan() {
 		t := scanner.Text()
-		if switchBranch(t, cmd, r) {
+
+		if strings.Contains(t, "master not found") {
+			switchBranch(cmd, r)
+
 			break
+		}
+
+		if strings.Contains(t, "fatal") {
+			fmt.Printf("Error: %s\n", t)
+			os.Exit(1)
 		}
 
 		fmt.Printf("Installing '%s': %s\n", r, scanner.Text())
 	}
 }
 
-func switchBranch(t string, cmd *exec.Cmd, r repo) bool {
-	if strings.Contains(t, "master not found") {
-		cmd.Args[3] = "main"
+func switchBranch(cmd *exec.Cmd, r repo) {
+	// workaround for the fact it says the dir already exists... need better fix
+	time.Sleep(500 * time.Millisecond)
+	cmd.Args[3] = "main"
 
-		err := os.RemoveAll(cmd.Args[len(cmd.Args)-1])
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Printf("Installing '%s': %s\n", r, "Trying branch 'main'")
-		showProgress(cloneCMD(cmd), r)
-
-		return true
+	err := os.RemoveAll(cmd.Args[len(cmd.Args)-1])
+	if err != nil {
+		panic(err)
 	}
 
-	return false
+	fmt.Printf("Installing '%s': %s\n", r, "Trying branch 'main'")
+	showProgress(cloneCMD(cmd), r)
 }
 
 func cloneCMD(o *exec.Cmd) *exec.Cmd {

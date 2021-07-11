@@ -15,14 +15,14 @@ import (
 )
 
 func processInstallCmds(p plugin) {
-	d := structure.GetPluginDir(string(p.dir))
+	d := structure.GetPluginDir(string(p.dir), p.opt)
 	if hasReadme(d) {
 		b, err := ioutil.ReadFile(filepath.Join(d, "README.md"))
 		if err != nil {
 			panic(err)
 		}
 
-		runPostInstallCmd(findCmd(p.dir, b), p.repo)
+		runPostInstallCmd(findCmd(p, b), p.repo)
 	}
 }
 
@@ -39,7 +39,7 @@ func runPostInstallCmd(cmd *exec.Cmd, r repo) {
 	fmt.Printf("Running post-install command for '%s':\n%s", r, string(o))
 }
 
-func findCmd(d dir, b []byte) *exec.Cmd {
+func findCmd(p plugin, b []byte) *exec.Cmd {
 	re := regexp.MustCompile(`(cd.*&&.)?yarn.install`)
 
 	res := re.Find(b)
@@ -55,7 +55,7 @@ func findCmd(d dir, b []byte) *exec.Cmd {
 	}
 
 	cmd := exec.Command("yarn", "install")
-	cmd.Dir = filepath.Join(structure.GetPluginDir(string(d)), dir)
+	cmd.Dir = filepath.Join(structure.GetPluginDir(string(p.dir), p.opt), dir)
 
 	return cmd
 }
@@ -86,6 +86,10 @@ func writeList(p []plugin) {
 		pluginString := string(v.repo)
 		if v.branch != "" {
 			pluginString = strings.Join([]string{string(v.repo), v.branch}, "@")
+		}
+
+		if v.opt {
+			pluginString = pluginString + ":opt"
 		}
 
 		r = append(r, pluginString)
@@ -156,8 +160,17 @@ func List() {
 		return
 	}
 
+	txt := "%d: %s\n"
+	txt2 := "%d: %s -- optional\n"
+
 	for k, v := range p {
-		fmt.Printf("%d: %s\n", k+offset, strings.Split(string(v.repo), "/")[1])
+		if v.opt {
+			fmt.Printf(txt2, k+offset, strings.Split(string(v.repo), "/")[1])
+
+			continue
+		}
+
+		fmt.Printf(txt, k+offset, strings.Split(string(v.repo), "/")[1])
 	}
 }
 

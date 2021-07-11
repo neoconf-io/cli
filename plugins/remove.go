@@ -30,7 +30,7 @@ func RemoveN() {
 			continue
 		}
 
-		err = os.RemoveAll(structure.GetPluginDir(string(p[i-1].dir)))
+		err = os.RemoveAll(structure.GetPluginDir(string(p[i-1].dir), p[i-1].opt))
 		p[i-1].repo = ""
 
 		if err != nil {
