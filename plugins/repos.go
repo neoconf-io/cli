@@ -26,10 +26,7 @@ func getPlugins(i []string) []plugin {
 	l := []plugin{}
 
 	for _, s := range i {
-		n := plugin{}
-		n.ParseRepo(s)
-
-		l = append(l, n)
+		l = append(l, parseRepo(s))
 	}
 
 	return l
@@ -54,15 +51,15 @@ func getJSON() []string {
 }
 
 func (i cfg) dir() dir { //nolint
-	return dir(strings.Replace(string(i), "+", ".", -1))
+	return dir(strings.ReplaceAll(string(i), "+", "."))
 }
 
 func (i cfg) repo() repo { //nolint
 	return i.dir().repo()
 }
 
-func (i dir) cfg() cfg { //nolint
-	return cfg(strings.Replace(string(i), ".", "+", -1))
+func (i dir) cfg() cfg {
+	return cfg(strings.ReplaceAll(string(i), ".", "+"))
 }
 
 func (i dir) repo() repo { //nolint
@@ -77,12 +74,15 @@ func (i repo) dir() dir {
 	return dir(strings.Replace(string(i), "/", "_", 1))
 }
 
-func (p *plugin) ParseRepo(i string) {
+func parseRepo(i string) plugin {
 	r, b := parsePluginString(i)
+	p := plugin{}
 	p.repo = r
 	p.dir = p.repo.dir()
 	p.cfg = p.dir.cfg()
 	p.branch = b
+
+	return p
 }
 
 const minSplit = 1

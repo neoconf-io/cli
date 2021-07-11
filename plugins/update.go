@@ -11,8 +11,8 @@ import (
 )
 
 type updated struct {
-	list []dir
 	sync.RWMutex
+	list []dir
 }
 
 func (u *updated) append(d dir) {
@@ -30,14 +30,14 @@ func Update() {
 	i := getJSON()
 
 	p := getPlugins(i)
-	l := len(p)
 
-	if l > 0 {
+	if l := len(p); l > 0 {
 		wg.Add(l)
 
 		for _, v := range p {
 			if !structure.Exists(structure.GetPluginDir(string(v.dir))) {
 				wg.Done()
+
 				continue
 			}
 
@@ -78,12 +78,13 @@ func update(p plugin, items *updated, wg *sync.WaitGroup) {
 	o, err := cmd.Output()
 	if err != nil {
 		fmt.Printf("Updating '%s': %s", b, err)
+
 		return
 	}
 
-	res := string(o)
-	if strings.Contains(res, "Already up to date") {
+	if res := string(o); strings.Contains(res, "Already up to date") {
 		fmt.Printf("Updating '%s': %s", strings.Replace(b, "_", "/", 1), res)
+
 		return
 	}
 

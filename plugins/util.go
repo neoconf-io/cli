@@ -126,8 +126,7 @@ func confirmation(msg string) bool {
 
 	fmt.Printf("%s (y/n) ", msg)
 
-	_, err := fmt.Scanln(&response)
-	if err != nil {
+	if _, err := fmt.Scanln(&response); err != nil {
 		panic(err)
 	}
 
@@ -138,6 +137,7 @@ func confirmation(msg string) bool {
 		return false
 	default:
 		fmt.Println("Wrong input.")
+
 		return confirmation(msg)
 	}
 }
@@ -152,6 +152,7 @@ func List() {
 
 	if len(p) < minL {
 		fmt.Println("No plugins installed")
+
 		return
 	}
 

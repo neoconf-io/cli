@@ -22,6 +22,7 @@ func RemoveN() {
 		i, err := strconv.Atoi(v)
 		if err != nil {
 			fmt.Printf("Couldn't process '%s'\n", v)
+
 			continue
 		}
 

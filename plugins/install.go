@@ -112,10 +112,7 @@ func parsePlugins(i []string) []plugin {
 	o := []plugin{}
 
 	for _, v := range i {
-		n := plugin{}
-		n.ParseRepo(v)
-
-		o = append(o, n)
+		o = append(o, parseRepo(v))
 	}
 
 	return o
