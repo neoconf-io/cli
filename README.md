@@ -1,7 +1,7 @@
 [![made-with-Go](https://img.shields.io/badge/Made%20with-Go-1f425f.svg)](http://golang.org)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
-[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/abenz1267/neoconf)](https://github.com/abenz1267/neoconf)
-[![GoReportCard example](https://goreportcard.com/badge/github.com/abenz1267/neoconf)](https://goreportcard.com/report/github.com/abenz1267/neoconf)
+[![GitHub go.mod Go version of a Go module](https://img.shields.io/github/go-mod/go-version/neoconf-io/cli)](https://github.com/neoconf-io/cli)
+[![GoReportCard example](https://goreportcard.com/badge/github.com/neoconf-io/cli)](https://goreportcard.com/report/github.com/neoconf-io/cli)
 
 # Neoconf - Neovim Config-Tool
 
@@ -25,8 +25,8 @@ It is highly WIP so use at own risk.
 Simply make sure neoconf is in your `$PATH`. Download the binary from here or build from source:
 
 ```
-git clone https://github.com/abenz1267/neoconf
-cd neoconf
+git clone https://github.com/neoconf-io/cli neocli
+cd neocli
 go install
 ```
 
