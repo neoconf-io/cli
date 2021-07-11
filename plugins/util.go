@@ -157,7 +157,7 @@ func List() {
 	}
 
 	for k, v := range p {
-		fmt.Printf("%d: %s\n", k+offset, v.repo)
+		fmt.Printf("%d: %s\n", k+offset, strings.Split(string(v.repo), "/")[1])
 	}
 }
 
