@@ -9,12 +9,7 @@ import (
 	"github.com/abenz1267/neoconf/structure"
 )
 
-// Clean steps:
-// 1. Get installed cfgs
-// 2. Compare with plugins.json
-// 3. Prompt for removal
-// 4. Remove cfg if not found
-// 5. Update plugins init.lua
+// Clean removes plugin configs for missing plugins.
 func Clean() {
 	f, err := ioutil.ReadDir(structure.Dir.PluginCfg)
 	if err != nil {
@@ -36,6 +31,7 @@ func Clean() {
 		for _, v := range p {
 			if n == string(v.cfg)+".lua" {
 				exists = true
+
 				break
 			}
 		}
