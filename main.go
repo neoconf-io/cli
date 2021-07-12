@@ -97,13 +97,35 @@ func getCmds() []cmd {
 		},
 	}
 
+	setopt := cmd{
+		long:        "opt",
+		short:       "opt",
+		example:     "",
+		description: "Outputs a list of start plugins. Enter index of plugins that should be moved to opt.",
+		do: func() {
+			plugins.Opt(true)
+		},
+	}
+
+	setstart := cmd{
+		long:        "start",
+		short:       "start",
+		example:     "",
+		description: "Outputs a list of opt plugins. Enter index of plugins that should be moved to start.",
+		do: func() {
+			plugins.Opt(false)
+		},
+	}
+
+	l := []cmd{list, clean, remove, update, install, init, setopt, setstart}
+
 	help := cmd{
 		long:        "help",
 		short:       "h",
 		example:     "",
 		description: "",
 		do: func() {
-			for _, v := range []cmd{list, clean, remove, update, install, init} {
+			for _, v := range l {
 				fmt.Printf("    --%s, %s:\n", v.long, v.short)
 				fmt.Printf("      %s \n\n", v.description)
 				if v.example != "" {
@@ -113,7 +135,7 @@ func getCmds() []cmd {
 		},
 	}
 
-	return []cmd{list, clean, remove, update, install, init, help}
+	return append(l, help)
 }
 
 func main() {

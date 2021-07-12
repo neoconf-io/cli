@@ -151,6 +151,17 @@ const (
 	offset = 1
 )
 
+func ListSpecial(p []plugin) {
+	if len(p) < minL {
+		fmt.Println("No plugins installed")
+		os.Exit(1)
+	}
+
+	for k, v := range p {
+		fmt.Printf("%d: %s\n", k+offset, strings.Split(string(v.repo), "/")[1])
+	}
+}
+
 func List() {
 	p := getPlugins(getJSON())
 

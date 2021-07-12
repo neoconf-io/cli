@@ -45,6 +45,7 @@ Barebone management of plugins is in place! Not defining a branch explicitly -> 
 3. `clean`: removes plugins not found in "plugins.json", removes `<plugin>.lua` from `lua/plugins` and orphaned folders.
 4. `remove`: this will list all plugins installed and prompt you to enter the index of the plugins you want to remove. Does not remove plugin config. Automatically.
 5. `list`: Simply lists all plugins installed.
+6. `opt / start`: Make plugin opt or start.
 
 ## Todo
 
